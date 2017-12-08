@@ -9,8 +9,8 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
     <br>Today: {{myDate | date:'dd-MMM-yyyy'}}
     <br>Product: {{productname | uppercase | reverseText}}
   </h3>
-  <!-- <iframe [src]="myVideoUrl" width="75%" height="400px"></iframe> -->
-  <iframe [src]="trustUrl" width="50%" height="300px"></iframe>
+  <!-- <iframe [src]="myVideoUrl" width="75%" height="400px"></iframe> 
+  <iframe [src]="trustUrl" width="50%" height="300px"></iframe> -->
   `
 })
 export class HomeComponent{
@@ -59,60 +59,60 @@ export class NotFoundComponent{
 }
 
 @Component({
-  template: `<h3 class="well">manage comopnent</h3>`
-  //templateUrl: './manage.component.html'
+ // template: `<h3 class="well">manage comopnent</h3>`,
+  templateUrl: './manage.component.html'
 })
 export class ManageComponent{
-  // mgproducts:Product[] = [];
-  // formProduct:Product = new Product('', '', 0, '');
+  mgproducts:Product[] = [];
+  formProduct:Product = new Product('', '', 0, ''); //new Product();
 
-  // constructor(private ps:ProductService){
-  //   //this.mgproducts = ps.getProducts();
-  //   ps.getProducts().subscribe(
-  //     (jsonresp) => {
-  //       //console.log(jsonresp);
-  //       //console.log(jsonresp.json());
-  //       this.mgproducts = jsonresp.json();
-  //     },
-  //     (err) => console.error(err)
-  //   );
-  // }
+  constructor(private ps:ProductService){
+    //this.mgproducts = ps.getProducts();
+    ps.getProducts().subscribe(
+      (jsonresp) => {
+        //console.log(jsonresp);
+        console.log(jsonresp.json());
+        this.mgproducts = jsonresp.json();
+      },
+      (err) => console.error(err)
+    );
+  }
 
-  // saveProduct(){
-  //   this.ps.addProduct(this.formProduct).subscribe(
-  //     (jsonresp) => {
+  saveProduct(){
+    this.ps.addProduct(this.formProduct).subscribe(
+      (jsonresp) => {
 
-  //       if(this.formProduct.id != null){
-  //         let idx = this.mgproducts.findIndex(prd =>prd.id == this.formProduct.id);
-  //         this.mgproducts[idx] = this.formProduct;
+        let updatedProduct = jsonresp.json();
 
-  //       }else{
-  //         this.mgproducts.push(jsonresp.json());
-  //       }
+                if(this.formProduct.id){ // Update request
+                    let idx = this.mgproducts.findIndex(prd => prd.id==this.formProduct.id);
+                    this.mgproducts[idx] = updatedProduct;
+                }else{ // Add request
+                    this.mgproducts.push(updatedProduct);
+                }
 
-  //       this.formProduct = new Product('', '', 0, '');
-  //     },
-  //     (err) => console.error(err)
-  //   )
-  // }
+        this.formProduct = new Product('', '', 0, ''); //= new Product();
+      },
+      (err) => console.error(err)
+    )
+  }
+ 
+  removeProduct(id:string, idx:number){
+    this.ps.deleteProduct(id).subscribe(
+      (jsonresp) => {
+          this.mgproducts.splice(idx, 1);
+      },
+      (err) => console.log(err)
+    );
+  }
 
-  // removeProduct(id:string, idx:number){
-  //   this.ps.deleteProduct(id).subscribe(
-  //     (jsonresp) => {
-  //         this.mgproducts.splice(idx, 1);
-  //     },
-  //     (err) => console.log(err)
-  //   );
-  // }
+  editProduct(selectedProduct:Product) : void{
 
-  // editProduct(selectedProduct:Product){
-  //   //this.formProduct = selectedProduct;
+    /**
+     * For cloning, otherwise they will point to same object
+     */
 
-  //   /**
-  //    * For cloning, otherwise they will point to same object
-  //    */
-
-  //   Object.assign(this.formProduct, selectedProduct);
-  // }
+    Object.assign(this.formProduct, selectedProduct);
+  }
 
 }
